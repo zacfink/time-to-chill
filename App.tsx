@@ -1,118 +1,126 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * @format
- */
-
-import React from 'react';
-import type {PropsWithChildren} from 'react';
+import React, {useState, useEffect} from 'react';
 import {
-  SafeAreaView,
-  ScrollView,
-  StatusBar,
-  StyleSheet,
-  Text,
-  useColorScheme,
   View,
+  Text,
+  StyleSheet,
+  useColorScheme,
+  TouchableOpacity,
 } from 'react-native';
 
-import {
-  Colors,
-  DebugInstructions,
-  Header,
-  LearnMoreLinks,
-  ReloadInstructions,
-} from 'react-native/Libraries/NewAppScreen';
+import NameModal from './components/NameModal.tsx';
+import Settings from './components/Settings';
 
-type SectionProps = PropsWithChildren<{
-  title: string;
-}>;
+export default function App() {
+  const [name, setName] = useState('');
+  const [nameModalVisible, setNameModalVisible] = useState(true);
+  const [settingsVisible, setSettingsVisible] = useState<boolean>(false);
 
-function Section({children, title}: SectionProps): JSX.Element {
-  const isDarkMode = useColorScheme() === 'dark';
+  const [colors, setColors] = useState<{
+    light: {r: number; g: number; b: number};
+    dark: {r: number; g: number; b: number};
+  }>({
+    light: {r: 66, g: 135, b: 245},
+    dark: {r: 18, g: 45, b: 166},
+  });
+  const colorScheme = useColorScheme();
+  const backgroundColor =
+    colorScheme === 'dark'
+      ? `rgb(${colors.dark.r}, ${colors.dark.g}, ${colors.dark.b})`
+      : `rgb(${colors.light.r}, ${colors.light.g}, ${colors.light.b})`;
+
+  const [time, setTime] = useState(() => {
+    const date = new Date();
+    return date.getHours() + ':' + date.getMinutes();
+  });
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const date = new Date();
+      let hours = date.getHours();
+      const minutes = date.getMinutes();
+      const seconds = date.getSeconds();
+      const ampm = hours >= 12 ? 'PM' : 'AM';
+
+      hours = hours % 12;
+      hours = hours ? hours : 12;
+
+      const formattedTime =
+        hours +
+        ':' +
+        minutes.toString().padStart(2, '0') +
+        ':' +
+        seconds.toString().padStart(2, '0') +
+        ' ' +
+        ampm;
+
+      setTime(formattedTime);
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, []);
+
+  const handleNameSubmit = () => {
+    setNameModalVisible(false);
+  };
+
+  const handleSettingsSubmit = () => {
+    setSettingsVisible(false);
+  };
+
+  const handleDiscardSettings = () => {
+    setSettingsVisible(false);
+  };
+
   return (
-    <View style={styles.sectionContainer}>
-      <Text
-        style={[
-          styles.sectionTitle,
-          {
-            color: isDarkMode ? Colors.white : Colors.black,
-          },
-        ]}>
-        {title}
-      </Text>
-      <Text
-        style={[
-          styles.sectionDescription,
-          {
-            color: isDarkMode ? Colors.light : Colors.dark,
-          },
-        ]}>
-        {children}
-      </Text>
+    <View style={[styles.container, {backgroundColor}]}>
+      <View style={styles.center}>
+        <NameModal
+          visible={nameModalVisible}
+          name={name}
+          setName={setName}
+          onSubmit={handleNameSubmit}
+        />
+        <Text style={styles.nameText}>
+          {name ? 'Hello, ' + name + '!' : 'Hello!'}
+        </Text>
+        <Text style={styles.timeText}>{time}</Text>
+      </View>
+      <TouchableOpacity
+        onPress={() => setSettingsVisible(true)}
+        style={styles.settingsButton}>
+        <Text>Settings</Text>
+      </TouchableOpacity>
+      <Settings
+        visible={settingsVisible}
+        colors={colors}
+        setColors={setColors}
+        onSubmit={handleSettingsSubmit}
+        onDiscard={handleDiscardSettings}
+      />
     </View>
   );
 }
 
-function App(): JSX.Element {
-  const isDarkMode = useColorScheme() === 'dark';
-
-  const backgroundStyle = {
-    backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
-  };
-
-  return (
-    <SafeAreaView style={backgroundStyle}>
-      <StatusBar
-        barStyle={isDarkMode ? 'light-content' : 'dark-content'}
-        backgroundColor={backgroundStyle.backgroundColor}
-      />
-      <ScrollView
-        contentInsetAdjustmentBehavior="automatic"
-        style={backgroundStyle}>
-        <Header />
-        <View
-          style={{
-            backgroundColor: isDarkMode ? Colors.black : Colors.white,
-          }}>
-          <Section title="Step One">
-            Edit <Text style={styles.highlight}>App.tsx</Text> to change this
-            screen and then come back to see your edits.
-          </Section>
-          <Section title="See Your Changes">
-            <ReloadInstructions />
-          </Section>
-          <Section title="Debug">
-            <DebugInstructions />
-          </Section>
-          <Section title="Learn More">
-            Read the docs to discover what to do next:
-          </Section>
-          <LearnMoreLinks />
-        </View>
-      </ScrollView>
-    </SafeAreaView>
-  );
-}
-
 const styles = StyleSheet.create({
-  sectionContainer: {
-    marginTop: 32,
-    paddingHorizontal: 24,
+  container: {
+    flex: 1,
+    justifyContent: 'center',
   },
-  sectionTitle: {
-    fontSize: 24,
-    fontWeight: '600',
+  center: {
+    marginTop: 100,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
-  sectionDescription: {
-    marginTop: 8,
-    fontSize: 18,
-    fontWeight: '400',
+  nameText: {
+    margin: 10,
+    fontSize: 48,
   },
-  highlight: {
-    fontWeight: '700',
+  timeText: {
+    margin: 10,
+    fontSize: 36,
+  },
+  settingsButton: {
+    margin: 100,
+    alignItems: 'center',
   },
 });
-
-export default App;

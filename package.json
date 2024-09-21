@@ -3,15 +3,27 @@
   "version": "0.0.1",
   "private": true,
   "scripts": {
-    "android": "react-native run-android",
-    "ios": "react-native run-ios",
+    "macOS": "react-native run-macos",
     "lint": "eslint .",
     "start": "react-native start",
     "test": "jest"
   },
   "dependencies": {
+    "@react-navigation/native": "^6.1.18",
+    "@react-navigation/native-stack": "^6.11.0",
+    "ical": "^0.8.0",
+    "ical.js": "^2.1.0",
     "react": "18.2.0",
-    "react-native": "0.71.0"
+    "react-native": "0.71.0",
+    "react-native-calendar": "^0.13.1",
+    "react-native-calendar-events": "^2.2.0",
+    "react-native-calendars": "^1.1306.0",
+    "react-native-fs": "^2.20.0",
+    "react-native-macos": "^0.71.0-0",
+    "react-native-music-control": "^1.4.1",
+    "react-native-safe-area-context": "^4.11.0",
+    "react-native-screens": "^3.34.0",
+    "react-native-track-player": "^4.1.1"
   },
   "devDependencies": {
     "@babel/core": "^7.12.9",
